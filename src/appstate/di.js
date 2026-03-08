@@ -1,0 +1,62 @@
+//
+//  di.js
+//  
+//
+//  Created by Emmanuel Babalola on 3/8/26.
+//
+import SeedHabitsRepository from "../data/seed/SeedHabitsRepository";
+import AsyncStorageUserHabitsRepository from "../data/storage/AsyncStorageUserHabitsRepository";
+import AsyncStorageCompletionsRepository from "../data/storage/AsyncStorageCompletionsRepository";
+import AsyncStoragePrefsRepository from "../data/storage/AsyncStoragePrefsRepository";
+
+import ExpoNotificationService from "../infra/notifications/ExpoNotificationService";
+
+import GetTodayHabitsUseCase from "../domain/usecases/GetTodayHabitsUseCase";
+import CompleteHabitUseCase from "../domain/usecases/CompleteHabitUseCase";
+import SnoozeHabitUseCase from "../domain/usecases/SnoozeHabitUseCase";
+import ScheduleTodayNudgesUseCase from "../domain/usecases/ScheduleTodayNudgesUseCase";
+
+export function createAppServices() {
+  // Repositories
+  const habitsRepo = new SeedHabitsRepository();
+  const userHabitsRepo = new AsyncStorageUserHabitsRepository();
+  const completionsRepo = new AsyncStorageCompletionsRepository();
+  const prefsRepo = new AsyncStoragePrefsRepository();
+
+  // Infra
+  const notifications = new ExpoNotificationService();
+
+  // Use-cases
+  const getTodayHabits = new GetTodayHabitsUseCase({
+    habitsRepo,
+    userHabitsRepo,
+    completionsRepo,
+  });
+
+  const completeHabit = new CompleteHabitUseCase({
+    userHabitsRepo,
+    completionsRepo,
+    notifications,
+  });
+
+  const snoozeHabit = new SnoozeHabitUseCase({ habitsRepo, notifications });
+
+  const scheduleTodayNudges = new ScheduleTodayNudgesUseCase({
+    habitsRepo,
+    userHabitsRepo,
+    notifications,
+    prefsRepo,
+  });
+
+  return {
+    habitsRepo,
+    userHabitsRepo,
+    completionsRepo,
+    prefsRepo,
+    notifications,
+    getTodayHabits,
+    completeHabit,
+    snoozeHabit,
+    scheduleTodayNudges,
+  };
+}
