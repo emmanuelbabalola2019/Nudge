@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "eco-nudges-app",
-    "slug": "eco-nudges-app",
-    "scheme": "eco-nudges",
+    "name": "Nudge",
+    "slug": "Nudge",
+    "scheme": "Nudge",
     "plugins": ["expo-router"],
     "ios": { "supportsTablet": true },
     "android": {},
