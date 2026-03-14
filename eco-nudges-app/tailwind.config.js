@@ -1,6 +1,6 @@
 //
 //  tailwind.config.js
-//  
+//
 //
 //  Created by Emmanuel Babalola on 3/8/26.
 //
@@ -12,4 +12,5 @@ module.exports = {
   },
   plugins: [],
 };
+
 
