@@ -6,6 +6,6 @@
     "plugins": ["expo-router"],
     "ios": { "supportsTablet": true },
     "android": {},
-    "extra": { "router": { "origin": false } }
+    //"extra": { "router": { "origin": false } }
   }
 }
