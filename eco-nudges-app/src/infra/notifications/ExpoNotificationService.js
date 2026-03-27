@@ -26,16 +26,19 @@ export default class ExpoNotificationService {
   }
 
   async scheduleLocalNudge({ habitId, title, body, fireDate }) {
-    const id = await Notifications.scheduleNotificationAsync({
-      content: { title, body, data: { habitId } },
-      trigger: fireDate,
-    });
+      const id = await Notifications.scheduleNotificationAsync({
+        content: { title, body, data: { habitId } },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: fireDate,
+        },
+      });
 
-    const dayISO = startOfLocalDayISO(fireDate);
-    await this._indexNotifId(habitId, dayISO, id);
+      const dayISO = startOfLocalDayISO(fireDate);
+      await this._indexNotifId(habitId, dayISO, id);
 
-    return id;
-  }
+      return id;
+    }
 
   async cancelByHabitForToday(habitId) {
     const dayISO = startOfLocalDayISO(new Date());
