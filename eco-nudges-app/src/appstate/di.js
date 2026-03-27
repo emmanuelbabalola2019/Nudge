@@ -15,18 +15,16 @@ import GetTodayHabitsUseCase from "../domain/usecases/GetTodayHabitsUseCase";
 import CompleteHabitUseCase from "../domain/usecases/CompleteHabitUseCase";
 import SnoozeHabitUseCase from "../domain/usecases/SnoozeHabitUseCase";
 import ScheduleTodayNudgesUseCase from "../domain/usecases/ScheduleTodayNudgesUseCase";
+import GetWeeklyStatsUseCase from "../domain/usecases/GetWeeklyStatsUseCase";
 
 export function createAppServices() {
-  // Repositories
   const habitsRepo = new SeedHabitsRepository();
   const userHabitsRepo = new AsyncStorageUserHabitsRepository();
   const completionsRepo = new AsyncStorageCompletionsRepository();
   const prefsRepo = new AsyncStoragePrefsRepository();
 
-  // Infra
   const notifications = new ExpoNotificationService();
 
-  // Use-cases
   const getTodayHabits = new GetTodayHabitsUseCase({
     habitsRepo,
     userHabitsRepo,
@@ -39,13 +37,22 @@ export function createAppServices() {
     notifications,
   });
 
-  const snoozeHabit = new SnoozeHabitUseCase({ habitsRepo, notifications });
+  const snoozeHabit = new SnoozeHabitUseCase({
+    habitsRepo,
+    notifications,
+  });
 
   const scheduleTodayNudges = new ScheduleTodayNudgesUseCase({
     habitsRepo,
     userHabitsRepo,
     notifications,
     prefsRepo,
+  });
+
+  const getWeeklyStats = new GetWeeklyStatsUseCase({
+    habitsRepo,
+    userHabitsRepo,
+    completionsRepo,
   });
 
   return {
@@ -58,5 +65,6 @@ export function createAppServices() {
     completeHabit,
     snoozeHabit,
     scheduleTodayNudges,
+    getWeeklyStats,
   };
 }

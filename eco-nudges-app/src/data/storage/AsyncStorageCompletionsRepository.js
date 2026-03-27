@@ -20,12 +20,32 @@ export default class AsyncStorageCompletionsRepository {
 
   async add(habitId, tsISO, note) {
     const all = await this._readAll();
-    all.push({ id: `${habitId}:${tsISO}`, habitId, tsISO, note: note || "" });
+    all.push({
+      id: `${habitId}:${tsISO}`,
+      habitId,
+      tsISO,
+      note: note || "",
+    });
     await this._writeAll(all);
   }
 
   async listForDay(dayISO) {
     const all = await this._readAll();
     return all.filter((c) => startOfLocalDayISO(new Date(c.tsISO)) === dayISO);
+  }
+
+  async listAll() {
+    return await this._readAll();
+  }
+
+  async listBetween(startISO, endISO) {
+    const all = await this._readAll();
+    const start = new Date(`${startISO}T00:00:00`);
+    const end = new Date(`${endISO}T23:59:59.999`);
+
+    return all.filter((c) => {
+      const d = new Date(c.tsISO);
+      return d >= start && d <= end;
+    });
   }
 }
