@@ -11,6 +11,10 @@ import { KEYS } from "../../data/storage/AsyncStorageKeys";
 import { startOfLocalDayISO } from "../time/dateUtils";
 
 export default class ExpoNotificationService {
+  constructor({ notificationEventsRepo } = {}) {
+    this.notificationEventsRepo = notificationEventsRepo;
+  }
+
   async ensurePermission() {
     const settings = await Notifications.getPermissionsAsync();
     if (settings.status === "granted") return "granted";
@@ -25,31 +29,52 @@ export default class ExpoNotificationService {
     });
   }
 
-  async scheduleLocalNudge({ habitId, title, body, fireDate }) {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: { title, body, data: { habitId } },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: fireDate,
+  async scheduleLocalNudge({ habitId, title, body, fireDate, windowKey }) {
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        data: {
+          habitId,
+          windowKey,
+          type: "habit_nudge",
         },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: fireDate,
+      },
+    });
+
+    const dayISO = startOfLocalDayISO(fireDate);
+    await this._indexNotifId(habitId, dayISO, id);
+
+    if (this.notificationEventsRepo) {
+      await this.notificationEventsRepo.add({
+        id: `${habitId}:${id}`,
+        notificationId: id,
+        habitId,
+        windowKey: windowKey || "anytime",
+        status: "scheduled",
+        fireDateISO: fireDate.toISOString(),
+        createdAtISO: new Date().toISOString(),
       });
-
-      const dayISO = startOfLocalDayISO(fireDate);
-      await this._indexNotifId(habitId, dayISO, id);
-
-      return id;
     }
+
+    return id;
+  }
 
   async cancelByHabitForToday(habitId) {
     const dayISO = startOfLocalDayISO(new Date());
     const index = await this._readIndex();
     const ids = index?.[habitId]?.[dayISO] || [];
+
     for (const id of ids) {
       try {
         await Notifications.cancelScheduledNotificationAsync(id);
       } catch {}
     }
-    // clear
+
     if (index[habitId]) index[habitId][dayISO] = [];
     await this._writeIndex(index);
   }

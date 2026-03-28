@@ -11,6 +11,7 @@ const DEFAULT_PREFS = {
   quietStartHour: 21,
   quietEndHour: 7,
   maxNudgesPerDay: 4,
+  enableSmartNudges: true,
 };
 
 export default class AsyncStoragePrefsRepository {
@@ -21,5 +22,12 @@ export default class AsyncStoragePrefsRepository {
 
   async set(prefs) {
     await AsyncStorage.setItem(KEYS.PREFS, JSON.stringify(prefs));
+  }
+
+  async update(partialPrefs) {
+    const current = await this.get();
+    const next = { ...current, ...partialPrefs };
+    await this.set(next);
+    return next;
   }
 }

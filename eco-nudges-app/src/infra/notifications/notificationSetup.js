@@ -14,3 +14,18 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
+export function registerNotificationResponseListener(notificationEventsRepo) {
+  return Notifications.addNotificationResponseReceivedListener(async (response) => {
+    const content = response?.notification?.request?.content;
+    const identifier = response?.notification?.request?.identifier;
+
+    if (!identifier || !notificationEventsRepo) return;
+
+    try {
+      await notificationEventsRepo.markScheduledNotificationOpened(identifier);
+    } catch (err) {
+      console.log("Failed to mark notification as opened", err);
+    }
+  });
+}

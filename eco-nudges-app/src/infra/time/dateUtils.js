@@ -39,3 +39,49 @@ export function getLastNDays(n) {
 
   return days;
 }
+
+export function isHourInQuietHours(hour, quietStartHour, quietEndHour) {
+  if (quietStartHour === quietEndHour) return false;
+  if (quietStartHour > quietEndHour) {
+    return hour >= quietStartHour || hour < quietEndHour;
+  }
+  return hour >= quietStartHour && hour < quietEndHour;
+}
+
+export function getWindowHour(windowKey) {
+  switch (windowKey) {
+    case "morning":
+      return 8;
+    case "commute":
+      return 17;
+    case "evening":
+      return 20;
+    case "anytime":
+    default:
+      return 13;
+  }
+}
+
+export function buildNextWindowDate(windowKey, now = new Date()) {
+  const fireDate = new Date(now);
+  fireDate.setMinutes(0, 0, 0);
+
+  const hour = getWindowHour(windowKey);
+  fireDate.setHours(hour, 0, 0, 0);
+
+  if (fireDate <= now) {
+    fireDate.setDate(fireDate.getDate() + 1);
+  }
+
+  return fireDate;
+}
+
+export function moveToNextNonQuietHour(date, quietStartHour, quietEndHour) {
+  const d = new Date(date);
+
+  while (isHourInQuietHours(d.getHours(), quietStartHour, quietEndHour)) {
+    d.setHours(d.getHours() + 1, 0, 0, 0);
+  }
+
+  return d;
+}
