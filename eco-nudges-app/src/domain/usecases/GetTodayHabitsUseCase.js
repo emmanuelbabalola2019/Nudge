@@ -21,7 +21,6 @@ export default class GetTodayHabitsUseCase {
     const completions = await this.completionsRepo.listForDay(dayISO);
     const completedSet = new Set(completions.map((c) => c.habitId));
 
-    // join + decorate
     return active
       .map((uh) => {
         const h = allHabits.find((x) => x.id === uh.habitId);
@@ -29,6 +28,7 @@ export default class GetTodayHabitsUseCase {
         return {
           ...h,
           streak: uh.streak || 0,
+          ignoredStreak: uh.ignoredStreak || 0,
           doneToday: completedSet.has(h.id),
           lastDoneAtISO: uh.lastDoneAtISO,
         };

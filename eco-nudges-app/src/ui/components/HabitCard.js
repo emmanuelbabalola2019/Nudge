@@ -18,6 +18,11 @@ export default function HabitCard({ habit, onDone, onSnooze }) {
             <View className="bg-slate-100 px-3 py-1 rounded-full">
               <Text className="text-slate-700">Streak: {habit.streak ?? 0}</Text>
             </View>
+            <View className="bg-slate-100 px-3 py-1 rounded-full">
+              <Text className="text-slate-700">
+                Ignored: {habit.ignoredStreak ?? 0}
+              </Text>
+            </View>
             {habit.doneToday ? (
               <View className="bg-emerald-100 px-3 py-1 rounded-full">
                 <Text className="text-emerald-800">Done today</Text>
