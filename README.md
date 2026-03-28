@@ -1,5 +1,5 @@
 # Nudge
-Self Project
+Self Project(This project was developed using Vibe coding techniques with Codex and Claude)
 
  Sustainable Habit Nudges – MVP Product Spec
 
